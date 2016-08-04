@@ -1,0 +1,29 @@
+{
+	"name": "jstewmc/floor-execution-time", 
+	"description": "Floor a script's execution time",
+	"license": "MIT",
+	"keywords": ["php", "jstewmc", "floor", "execution", "time"],
+	"authors": [
+		{
+			"name": "Jack Clayton",
+			"email": "clayjs0@gmail.com"	
+		}
+	],
+	"repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/jstewmc/test-case"
+        }	
+	],
+	"require": {
+		"php": "^7.0"
+	},
+	"require-dev": {
+		"jstewmc/test-case": "^0.1"
+	},
+	"autoload": {
+		"psr-4": {
+			"Jstewmc\\FloorExecutionTime\\": "src/"
+		}
+	}
+}
