@@ -43,6 +43,12 @@ If you're working with HTTP requests, don't forget about the `REQUEST_TIME_FLOAT
 
 ## Version
 
+### 1.0.0, August 16, 2016
+
+* Major release
+* Update `composer.json`
+* Clean up comments
+
 ### 0.1.0, August 3, 2016
 
 * Initial release
