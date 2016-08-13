@@ -1,6 +1,6 @@
 <?php
 /**
- * The file for the floor-execution-time tests
+ * The file for the floor-execution-time service tests
  *
  * @author     Jack Clayton <jack@jahuty.com>
  * @copyright  2016 Jack Clayton
@@ -12,7 +12,7 @@ namespace Jstewmc\FloorExecutionTime;
 use Jstewmc\TestCase\TestCase;
 
 /**
- * Tests for the floor-execution-time class
+ * Tests for the floor-execution-time service
  */
 class FloorTest extends TestCase
 {

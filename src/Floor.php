@@ -1,6 +1,6 @@
 <?php
 /**
- * The file for the floor-execution-time context
+ * The file for the floor-execution-time service
  *
  * @author     Jack Clayton <clayjs0@gmail.com>
  * @copyright  2016 Jack Clayton
@@ -12,7 +12,7 @@ namespace Jstewmc\FloorExecutionTime;
 use InvalidArgumentException;
 
 /**
- * The floor-execution-time context 
+ * The floor-execution-time service 
  *
  * @since  0.1.0
  */
@@ -30,7 +30,7 @@ class Floor
     /* !Magic methods */
     
     /**
-     * Called when the context is constructed
+     * Called when the service is constructed
      *
      * @param   int  $floor  the floor in milliseconds
      * @throws  InvalidArgumentException  if $floor is not a positive integer
@@ -50,7 +50,7 @@ class Floor
     }
     
     /**
-     * Called when the class is treated like a function
+     * Called when the service is treated like a function
      *
      * If the difference between the start-time and current-time is less than the
      * lower bound, I'll sleep for the difference.
