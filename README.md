@@ -6,7 +6,7 @@ This library will calculate a script's total execution time from `$_SERVER['REQU
 If the total execution time is _less than_ the _floor_, it will sleep for the difference:
 
 ```php
-use Jstewmc\FloorExecutionTime;
+namespace Jstewmc\FloorExecutionTime;
 
 // instantiate the service with a 500 millisecond floor
 $service = new FloorExecutionTime(500);
@@ -19,7 +19,7 @@ $service();  // sleeps for 400 milliseconds
 If the execution time is _greater than_ the _floor_, it will not sleep:
 
 ```php
-use Jstewmc\FloorExecutionTime;
+namespace Jstewmc\FloorExecutionTime;
 
 // instantiate the service with a 500 millisecond floor
 $service = new FloorExecutionTime(500);
