@@ -1,37 +1,39 @@
 # floor-execution-time
 Floor a script's execution time.
 
-This library will calculate a script's total execution time to now. If the execution time is less than the _floor_, it will sleep for the difference:
+This library will calculate a script's total execution time from `$_SERVER['REQUEST_TIME_FLOAT']` to _now_ in milliseconds. 
+
+If the total execution time is _less than_ the _floor_, it will sleep for the difference:
 
 ```php
 use Jstewmc\FloorExecutionTime;
 
-// get the script's start time in seconds *with* microseconds
-$start = microtime(true);
+// instantiate the service with a 500 millisecond floor
+$service = new FloorExecutionTime(500);
 
-// ... a fast PHP script that takes 100 milliseconds
+// ... something that takes 100 milliseconds
 
-// floor the execution time at 500 milliseconds
-(new Floor(500))($start);  // sleeps for 400 milliseconds
+$service();  // sleeps for 400 milliseconds
 ```
+
+If the execution time is _greater than_ the _floor_, it will not sleep:
 
 ```php
 use Jstewmc\FloorExecutionTime;
 
-// get the script's start time in seconds *with* microseconds
-$start = microtime(true);
+// instantiate the service with a 500 millisecond floor
+$service = new FloorExecutionTime(500);
 
-// ... a slow PHP process that takes 1,000 milliseconds
+// ... something that takes 1,000 milliseconds
 
-// floor the execution time at 500 milliseconds
-(new Floor(500))($start);  // sleeps for 0 milliseconds
+$service();  // sleeps for 0 milliseconds
 ```
 
-A floor execution time helps defend against _brute-force_ and _timing_ attacks. Scripts which are likely to be brute-forced should be slow. Scripts which are likely to be timing attacked should have a constant execution time. Some scripts should be both.
+Flooring execution time helps defend against _brute-force_ and _timing_ attacks. Scripts which are likely to be brute-forced should be slow. Scripts which are likely to be timing attacked should have a constant execution time. Some scripts should be both.
 
-## Start time
+## Dependencies
 
-If you're working with HTTP requests, don't forget about the `REQUEST_TIME_FLOAT` [server variable](http://php.net/manual/en/reserved.variables.server.php).
+This library depends on the `REQUEST_TIME_FLOAT` [server variable](http://php.net/manual/en/reserved.variables.server.php). There is no guarantee that every web server will provide the `REQUEST_TIME_FLOAT` variable, however, most will. If the `REQUEST_TIME_FLOAT` server variable does not exist, this library will throw a `RuntimeException` on construction.
 
 ## License
 
@@ -42,6 +44,12 @@ If you're working with HTTP requests, don't forget about the `REQUEST_TIME_FLOAT
 [Jack Clayton](mailto:clayjs0@gmail.com)
 
 ## Version
+
+### 2.0.0, December 27, 2016
+
+* Rename `Floor` to `FloorExecutionTime`.
+* Update `__construct()` to throw exception if `REQUEST_TIME_FLOAT` server variable does not exist.
+* Remove `$start` argument of `__invoke()` method. It makes more sense to use `REQUEST_START_TIME`.
 
 ### 1.0.0, August 16, 2016
 

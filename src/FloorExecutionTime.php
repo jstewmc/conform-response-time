@@ -10,19 +10,20 @@
 namespace Jstewmc\FloorExecutionTime;
 
 use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * The floor-execution-time service 
  *
- * @since  0.1.0
+ * @since  2.0.0
  */
-class Floor
+class FloorExecutionTime
 {
     /* !Private properties */
     
     /**
      * @var    int  the floor in milliseconds
-     * @since  0.1.0
+     * @since  2.0.0
      */
     private $floor;
     
@@ -33,11 +34,24 @@ class Floor
      * Called when the service is constructed
      *
      * @param   int  $floor  the floor in milliseconds
+     * @throws  RuntimeException          if the server variable, 
+     *     $_SERVER['REQUEST_TIME_FLOAT'] does not exist
      * @throws  InvalidArgumentException  if $floor is not a positive integer
-     * @since   0.1.0
+     * @since   2.0.0
      */
     public function __construct(int $floor)
     {   
+        // if the server variable does not exist, short-circuit
+        if ( 
+            ! isset($_SERVER) 
+            || ! array_key_exists('REQUEST_TIME_FLOAT', $_SERVER)
+        ) {
+            throw new RuntimeException(
+                __METHOD__ . "() expects the server variable, 'REQUEST_TIME_FLOAT', "
+                    . "to exist"
+            );    
+        }
+        
         // if $floor is not a positive integer, short-circuit
         if ($floor < 1) {
             throw new InvalidArgumentException(
@@ -52,39 +66,26 @@ class Floor
     /**
      * Called when the service is treated like a function
      *
-     * If the difference between the start-time and current-time is less than the
-     * lower bound, I'll sleep for the difference.
+     * If the difference between the requset's start-time and the current-time is 
+     * less than the floor time, I'll sleep for the difference.
      *
-     * @param   float  the start time *with* microseconds (e.g., ######.######) 
      * @return  void
-     * @since   0.1.0
+     * @since   2.0.0
      */
-    public function __invoke(float $start)
+    public function __invoke()
     {
-        // if $start is not a positive float, short-circuit
-        if ($start <= 0) {
-            throw new InvalidArgumentException(
-                __METHOD__ . "() expects parameter one, start, to be a positive "
-                    . "float"
-            );   
-        }
+        // get the request's start time
+        $start = $_SERVER['REQUEST_TIME_FLOAT'];
         
-        // if $start is after now, short-circuit
-        if ($start > microtime(true)) {
-            throw new InvalidArgumentException(
-                __METHOD__ . "() expects parameter one, start, to be before now"
-            );
-        }
-        
-        // otherwise, get the difference between the now and start time
+        // get the difference between the now and start time
         $diff = $this->getDiff($start);
         
         // if a wait exists, sleep my sweet prince!
-		if (0 < ($wait = $this->getWait($diff))) {
-			usleep($wait);
-		}
+        if (0 < ($wait = $this->getWait($diff))) {
+            usleep($wait);
+        }
 		
-		return;
+        return;
     }
     
     
@@ -99,6 +100,7 @@ class Floor
      *
      * @param   float  $start  the start-time *with* microseconds (e.g., ###.###)
      * @return  int
+     * @since   2.0.0
      */
     private function getDiff(float $start): int
     {
@@ -115,6 +117,7 @@ class Floor
      * @param   int  $diff  the difference between now and the start-time *in* 
      *     microseconds (e.g., #########)
      * @return  int
+     * @since   2.0.0
      */
     private function getWait(int $diff): int
     {

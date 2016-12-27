@@ -15,8 +15,20 @@ use Jstewmc\TestCase\TestCase;
  * Tests for the floor-execution-time service
  */
 class FloorTest extends TestCase
-{
-    /* !__construct() */
+{	
+	/**
+	 * __construct() should throw exception if server variable does not exist
+	 */
+	public function testConstructThrowsExceptionIfServerVariableDoesNotExist()
+	{
+		$this->setExpectedException('RuntimeException');
+		
+		unset($_SERVER['REQUEST_TIME_FLOAT']);
+		
+		new FloorExecutionTime(1);
+		
+		return;
+	}
     
     /**
      * __construct() should throw exception if $floor is not positive
@@ -25,7 +37,7 @@ class FloorTest extends TestCase
     {
         $this->setExpectedException('InvalidArgumentException');
         
-        new Floor(-1);
+        new FloorExecutionTime(-1);
         
         return;
     }
@@ -37,36 +49,9 @@ class FloorTest extends TestCase
     {
         $floor = 1;
         
-        $floorer = new Floor($floor);
+        $service = new FloorExecutionTime($floor);
         
-        $this->assertEquals($floor, $this->getProperty('floor', $floorer));
-        
-        return;
-    }
-    
-    
-    /* !__invoke() */
-    
-    /**
-     * __invoke() should throw exception if $start is not positive
-     */
-    public function testInvokeThrowsExceptionIfStartIsNotPositive()
-    {
-        $this->setExpectedException('InvalidArgumentException');
-        
-        (new Floor(1))(-1.0);
-        
-        return;
-    }
-    
-    /**
-     * __invoke() should throw exception if $start is after "now"
-     */
-    public function testInvokeThrowsExceptionIfStartIsAfterNow()
-    {
-        $this->setExpectedException('InvalidArgumentException');
-        
-        (new Floor(1))(microtime(true) + 1000);
+        $this->assertEquals($floor, $this->getProperty('floor', $service));
         
         return;
     }
@@ -77,13 +62,18 @@ class FloorTest extends TestCase
     public function testInvokeSleepsIfWaitDoesExist()
     {
         $floor = 100;  
-        $start = microtime(true);    
+        
+        // instantiate the service
+        $service = new FloorExecutionTime($floor);
+        
+        // set the server variable
+        $_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);    
         
         // floor the execution time
-        (new Floor($floor))($start);
+        $service();
         
         // get the time that's elapsed in milliseconds
-        $diff = (microtime(true) - $start) * 1000;
+        $diff = (microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000;
         
         // the diff should be greater than or equal to the interval
         $this->assertGreaterThanOrEqual($floor, $diff);
@@ -97,7 +87,9 @@ class FloorTest extends TestCase
     public function testInvokeDoesNotSleepIfWaitDoesNotExist()
     {
         $floor = 100; 
-        $start = microtime(true);
+        
+        // set the server variable
+        $_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);
     
         // sleep for more than the floor
         usleep($floor * 1000 + 1);
@@ -106,7 +98,10 @@ class FloorTest extends TestCase
         $break = microtime(true);
         
         // floor the execution time
-        (new Floor($floor))($start);
+        $service = new FloorExecutionTime($floor);
+        
+        // floor the execution time
+        $service();
         
         // get the time that's elapsed from the break to now in milliseconds
         $diff = (microtime(true) - $break) * 1000;
